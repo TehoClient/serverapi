@@ -1,0 +1,107 @@
+{
+  "server-name": "",
+  "debug": false,
+  "proxy": {
+    "secret": ""
+  },
+  "private": {
+    "grant": ""
+  },
+  "permissions": {
+    "operator-level": 2,
+    "players": {}
+  },
+  "features": {
+    "notifications": true,
+    "waypoints": true,
+    "modules": true,
+    "staff": true,
+    "hud": true,
+    "suspect": true,
+    "npcs": true,
+    "world": true,
+    "players": true,
+    "keybinds": true,
+    "camera": true,
+    "audio": true,
+    "social": true,
+    "ui": true,
+    "info": true,
+    "identity": true,
+    "integrity": true,
+    "pack": true,
+    "clips": true,
+    "broadcast": true,
+    "statues": true,
+    "branding": true,
+    "showcase": true,
+    "assets": true
+  },
+  "welcome": {
+    "enabled": false,
+    "title": "&bWelcome, {player}",
+    "body": "This server supports Teho"
+  },
+  "staff": {
+    "reason": "Staff tools",
+    "radius": 48,
+    "xray-blocks": [
+      "minecraft:diamond_ore #5FE0DC",
+      "minecraft:deepslate_diamond_ore #5FE0DC",
+      "minecraft:ancient_debris #B07CFF",
+      "minecraft:emerald_ore #7CDB8A",
+      "minecraft:deepslate_emerald_ore #7CDB8A",
+      "minecraft:gold_ore #FFC24D",
+      "minecraft:deepslate_gold_ore #FFC24D",
+      "minecraft:spawner #FF5555"
+    ],
+    "grants": [
+      {
+        "permission": "tehoapi.staff.xray",
+        "tools": [
+          "xray"
+        ]
+      },
+      {
+        "permission": "tehoapi.staff.esp",
+        "tools": [
+          "player_esp",
+          "nametags"
+        ]
+      },
+      {
+        "permission": "tehoapi.staff.freecam",
+        "tools": [
+          "freecam"
+        ]
+      }
+    ]
+  },
+  "rules": {
+    "global": {
+      "disable": [],
+      "disable-categories": [],
+      "caps": []
+    }
+  },
+  "backend": {
+    "url": "",
+    "key": ""
+  },
+  "verified": {
+    "certificate": ""
+  },
+  "presence": {
+    "game": "",
+    "state": ""
+  },
+  "links": {},
+  "resource-pack": {
+    "url": "",
+    "sha1": "",
+    "required": false
+  },
+  "combat": {
+    "legacy-pvp": false
+  }
+}

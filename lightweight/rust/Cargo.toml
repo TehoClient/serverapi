@@ -1,0 +1,9 @@
+[package]
+name = "teho-api"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.73"
+description = "Teho Server API protocol for Rust servers and proxies"
+license = "MIT"
+
+[dependencies]

@@ -1,0 +1,127 @@
+/*
+ * This file is part of Teho Server API, licensed under the MIT License.
+ *
+ * Copyright (c) 2026 SGM Studios LTD
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+	id 'net.neoforged.moddev' version "${moddev_version}" apply false
+}
+
+subprojects {
+	apply plugin: 'java-library'
+
+	tasks.withType(Jar).configureEach {
+		from(rootProject.file('LICENSE')) { into 'META-INF' }
+	}
+
+	repositories {
+		mavenCentral()
+		maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+		maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	}
+
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = 'UTF-8'
+		options.release = 8
+		options.compilerArgs << '-Xlint:-options'
+	}
+}
+
+def libraries = [
+	protocol: ['teho-api-protocol', 'Teho Server API protocol', 'The teho:api wire format: messages, codec and chunking.'],
+	api     : ['teho-api', 'Teho Server API', 'The platform-neutral Teho Server API: TehoApi, TehoPlayer and one API per feature.'],
+]
+
+libraries.each { name, info ->
+	project(":${name}") {
+		apply from: rootProject.file('gradle/publishing.gradle')
+		java {
+			withSourcesJar()
+		}
+		publishing {
+			publications {
+				maven(MavenPublication) {
+					artifactId = info[0]
+					from components.java
+					tehoPom(pom, info[1], info[2])
+				}
+			}
+			repositories { tehoRepositories(delegate) }
+		}
+	}
+}
+
+def platforms = [
+	bukkit  : 'Spigot, Paper and Folia',
+	velocity: 'Velocity',
+	bungee  : 'BungeeCord and Waterfall',
+	sponge  : 'Sponge',
+	fabric  : 'Fabric servers',
+	neoforge: 'NeoForge servers',
+]
+
+platforms.each { name, label ->
+	project(":${name}") {
+		apply from: rootProject.file('gradle/publishing.gradle')
+		def apiJar = tasks.register('apiJar', Jar) {
+			archiveBaseName = "teho-api-${name}"
+			archiveClassifier = ''
+			from(sourceSets.main.output.classesDirs)
+			destinationDirectory = layout.buildDirectory.dir('publish')
+		}
+		afterEvaluate {
+			publishing {
+				publications {
+					maven(MavenPublication) {
+						artifactId = "teho-api-${name}"
+						artifact(apiJar)
+						artifact(tasks.named('jar')) {
+							classifier = 'plugin'
+						}
+						tehoPom(pom, "Teho Server API for ${label}", "Helpers and events for ${label}. Compile against the main artifact; install the plugin classifier on your server.")
+						pom.withXml {
+							def dependency = asNode().appendNode('dependencies').appendNode('dependency')
+							dependency.appendNode('groupId', project.group)
+							dependency.appendNode('artifactId', 'teho-api')
+							dependency.appendNode('version', project.version)
+							dependency.appendNode('scope', 'compile')
+						}
+					}
+				}
+				repositories { tehoRepositories(delegate) }
+			}
+		}
+	}
+}
+
+project(':minestom') {
+	apply from: rootProject.file('gradle/publishing.gradle')
+	afterEvaluate {
+		publishing {
+			publications.named('maven', MavenPublication) {
+				tehoPom(pom, 'Teho Server API for Minestom', 'Lets a Minestom server talk to players on Teho Client.')
+			}
+			repositories { tehoRepositories(delegate) }
+		}
+	}
+}

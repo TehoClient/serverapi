@@ -1,0 +1,1 @@
+{"id":"tehoapi","name":"TehoAPI","version":"${version}","description":"Lets a Velocity network talk to players on Teho Client.","authors":["Teho"],"dependencies":[],"main":"dev.tehoclient.api.velocity.TehoVelocityPlugin"}

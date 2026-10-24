@@ -1,0 +1,33 @@
+{
+  "loader": {
+    "name": "java_plain",
+    "version": "1.0"
+  },
+  "license": "MIT",
+  "global": {
+    "version": "${version}",
+    "links": {
+      "homepage": "https://tho.pics"
+    },
+    "contributors": [
+      {
+        "name": "Teho",
+        "description": "Developer"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "spongeapi",
+        "version": "17.0.0"
+      }
+    ]
+  },
+  "plugins": [
+    {
+      "id": "teho-api",
+      "name": "Teho Server API",
+      "entrypoint": "dev.tehoclient.api.sponge.TehoSponge",
+      "description": "Lets a Sponge server talk to players on Teho Client."
+    }
+  ]
+}

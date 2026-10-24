@@ -1,0 +1,25 @@
+{
+  "name": "@tehoclient/server-api",
+  "version": "1.0.0",
+  "description": "Teho Server API protocol for Node.js servers and proxies",
+  "main": "src/index.js",
+  "types": "index.d.ts",
+  "files": [
+    "src",
+    "index.d.ts",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TehoClient/serverapi.git",
+    "directory": "lightweight/node"
+  },
+  "homepage": "https://tehoclient.dev"
+}

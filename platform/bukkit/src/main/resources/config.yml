@@ -1,0 +1,137 @@
+# This file is part of Teho Server API, licensed under the MIT License.
+#
+# Copyright (c) 2026 SGM Studios LTD
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+server-name: ""
+debug: false
+
+private:
+  grant: ""
+
+proxy:
+  secret: ""
+
+features:
+  notifications: true
+  waypoints: true
+  modules: true
+  staff: true
+  hud: true
+  suspect: true
+  npcs: true
+  world: true
+  players: true
+  keybinds: true
+  camera: true
+  audio: true
+  social: true
+  ui: true
+  info: true
+  identity: true
+  integrity: true
+  pack: true
+  clips: true
+  broadcast: true
+  statues: true
+  branding: true
+  showcase: true
+  assets: true
+
+welcome:
+  enabled: false
+  title: "&bWelcome, {player}"
+  body: "This server supports Teho"
+
+death-waypoint: false
+
+staff:
+  reason: "Staff tools"
+  radius: 48
+  xray-blocks:
+    - "minecraft:diamond_ore #5FE0DC"
+    - "minecraft:deepslate_diamond_ore #5FE0DC"
+    - "minecraft:ancient_debris #B07CFF"
+    - "minecraft:emerald_ore #7CDB8A"
+    - "minecraft:deepslate_emerald_ore #7CDB8A"
+    - "minecraft:gold_ore #FFC24D"
+    - "minecraft:deepslate_gold_ore #FFC24D"
+    - "minecraft:spawner #FF5555"
+  grants:
+    - permission: tehoapi.staff.xray
+      tools: [xray, storage_esp]
+    - permission: tehoapi.staff.esp
+      tools: [player_esp, nametags, entity_esp, tracers, highlights, trails]
+    - permission: tehoapi.staff.freecam
+      tools: [freecam, spectate]
+    - permission: tehoapi.staff.moderate
+      tools: [inspector, action_wheel, alerts, click_teleport, combat_overlay]
+    - permission: tehoapi.staff.admin
+      tools: [lag_map, fullbright]
+  storage-blocks: []
+  entity-types: []
+  inspector: true
+  combat-overlay: true
+  trail-seconds: 300
+  freeze:
+    title: "&bYou are frozen"
+    body: "Do not log out. A staff member will speak to you."
+  action-wheel:
+    title: "Staff"
+    actions:
+      - {id: freeze, label: "Freeze", item: ice, target: player, builtin: freeze}
+      - {id: spectate, label: "Spectate", item: ender_eye, target: player, builtin: spectate}
+      - {id: teleport, label: "Teleport", item: ender_pearl, target: player, builtin: teleport}
+      - {id: invsee, label: "Inventory", item: chest, target: player, builtin: invsee}
+      - {id: screenshot, label: "Screenshot", item: painting, target: player, builtin: screenshot}
+      - {id: modcheck, label: "Mod check", item: book, target: player, builtin: modlist}
+      - {id: trail, label: "Path history", item: string, target: player, builtin: trail}
+      - {id: lagmap, label: "Lag map", item: hopper, target: none, builtin: lagmap}
+      - {id: kick, label: "Kick", item: barrier, target: player, command: "kick {target} Kicked by {staff}", as: staff}
+
+rules:
+  global:
+    disable: []
+    disable-categories: []
+    caps: []
+  worlds: {}
+
+npcs: []
+
+backend:
+  url: ""
+  key: ""
+
+verified:
+  certificate: ""
+
+presence:
+  game: ""
+  state: ""
+
+links: {}
+
+resource-pack:
+  url: ""
+  sha1: ""
+  required: false
+
+combat:
+  legacy-pvp: false

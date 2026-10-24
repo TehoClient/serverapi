@@ -1,0 +1,947 @@
+/*
+ * This file is part of Teho Server API, licensed under the MIT License.
+ *
+ * Copyright (c) 2026 SGM Studios LTD
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+syntax = "proto3";
+
+package teho.api.v1;
+
+option java_package = "dev.tehoclient.api.proto";
+
+message Hello {
+  uint32 protocol = 1;
+  string client = 2;
+  string minecraft = 3;
+  string platform = 4;
+  repeated string capabilities = 5;
+}
+
+message Welcome {
+  uint32 protocol = 1;
+  uint64 session = 2;
+  repeated string enabled = 3;
+  string server_name = 4;
+  string grant = 5;
+  string verified = 6;
+}
+
+message HelloRequest {}
+
+message Reset {}
+
+message Notify {
+  string id = 1;
+  string title = 2;
+  string body = 3;
+  fixed32 accent = 4;
+  uint32 duration_ms = 5;
+  bool sound = 6;
+}
+
+message Dismiss {
+  string id = 1;
+}
+
+message WaypointSet {
+  string id = 1;
+  string name = 2;
+  sint32 x = 3;
+  sint32 y = 4;
+  sint32 z = 5;
+  string dimension = 6;
+  fixed32 color = 7;
+  bool focus = 8;
+}
+
+message WaypointRemove {
+  string id = 1;
+}
+
+message WaypointClear {}
+
+message Reply {
+  uint32 request_id = 1;
+  bool ok = 2;
+  string error = 3;
+  bytes data = 4;
+}
+
+message Event {
+  string kind = 1;
+  string target = 2;
+  string value = 3;
+  uint32 request_id = 4;
+}
+
+message Chunk {
+  uint32 stream = 1;
+  uint32 index = 2;
+  uint32 total = 3;
+  bytes data = 4;
+}
+
+message AssetOffer {
+  bytes hash = 1;
+  uint32 kind = 2;
+  uint32 size = 3;
+}
+
+message AssetWant {
+  repeated bytes hashes = 1;
+}
+
+message AssetData {
+  bytes hash = 1;
+  uint32 kind = 2;
+  bytes data = 3;
+}
+
+message ConsentResult {
+  string scope = 1;
+  bool granted = 2;
+  repeated string items = 3;
+}
+
+message ModuleRules {
+  repeated string disabled = 1;
+  repeated string disabled_categories = 2;
+  string reason = 3;
+  bool competitive = 4;
+  repeated string allowed = 5;
+}
+
+message SettingCap {
+  string module = 1;
+  string key = 2;
+  sint32 min = 3;
+  sint32 max = 4;
+  bool bounded = 5;
+  string pinned = 6;
+}
+
+message SettingCaps {
+  repeated SettingCap caps = 1;
+}
+
+message XrayBlock {
+  string id = 1;
+  fixed32 color = 2;
+}
+
+message StaffGrant {
+  repeated string tools = 1;
+  string reason = 2;
+  repeated XrayBlock xray_blocks = 3;
+  uint32 radius = 4;
+  repeated XrayBlock storage_blocks = 5;
+  repeated XrayBlock entity_types = 6;
+}
+
+message StaffRevoke {
+  repeated string tools = 1;
+}
+
+message StaffState {
+  string tool = 1;
+  bool active = 2;
+}
+
+message EspEntry {
+  string player = 1;
+  fixed32 color = 2;
+  string label = 3;
+}
+
+message EspStyle {
+  repeated EspEntry entries = 1;
+}
+
+message Cooldown {
+  string id = 1;
+  string label = 2;
+  uint32 duration_ms = 3;
+  string item = 4;
+  bytes asset = 5;
+  fixed32 color = 6;
+}
+
+message CooldownClear {}
+
+message Timer {
+  string id = 1;
+  string label = 2;
+  uint32 mode = 3;
+  sint32 millis = 4;
+  bool paused = 5;
+  fixed32 color = 6;
+}
+
+message TimerRemove {
+  string id = 1;
+}
+
+message StaffSupport {
+  repeated string tools = 1;
+}
+
+message Highlight {
+  string id = 1;
+  uint32 kind = 2;
+  string entity = 3;
+  sint32 x = 4;
+  sint32 y = 5;
+  sint32 z = 6;
+  sint32 x2 = 7;
+  sint32 y2 = 8;
+  sint32 z2 = 9;
+  fixed32 color = 10;
+  string label = 11;
+  uint32 style = 12;
+  bool tracer = 13;
+  uint32 ttl_ms = 14;
+  string dimension = 15;
+}
+
+message HighlightRemove {
+  repeated string ids = 1;
+}
+
+message Trail {
+  string player = 1;
+  repeated sint32 points = 2 [packed = false];
+  fixed32 color = 3;
+  string label = 4;
+  uint32 ttl_ms = 5;
+  string dimension = 6;
+}
+
+message InspectRequest {
+  uint32 request_id = 1;
+  uint32 kind = 2;
+  string target = 3;
+  sint32 x = 4;
+  sint32 y = 5;
+  sint32 z = 6;
+}
+
+message InspectRow {
+  string label = 1;
+  string value = 2;
+  fixed32 color = 3;
+}
+
+message InspectAction {
+  string id = 1;
+  string label = 2;
+}
+
+message InspectCard {
+  uint32 request_id = 1;
+  string title = 2;
+  string subtitle = 3;
+  repeated InspectRow rows = 4;
+  repeated InspectAction actions = 5;
+  uint32 ttl_ms = 6;
+  string target = 7;
+}
+
+message WheelAction {
+  string id = 1;
+  string label = 2;
+  string item = 3;
+  fixed32 color = 4;
+  uint32 target = 5;
+}
+
+message ActionWheel {
+  repeated WheelAction actions = 1;
+  string title = 2;
+}
+
+message Alert {
+  string id = 1;
+  uint32 severity = 2;
+  string title = 3;
+  string body = 4;
+  string player = 5;
+  sint32 x = 6;
+  sint32 y = 7;
+  sint32 z = 8;
+  string dimension = 9;
+  uint32 ttl_ms = 10;
+}
+
+message TargetStats {
+  string player = 1;
+  repeated InspectRow rows = 2;
+  uint32 ttl_ms = 3;
+}
+
+message Spectate {
+  string player = 1;
+  uint32 distance = 2;
+}
+
+message StaffAction {
+  string action = 1;
+  uint32 target_kind = 2;
+  string target = 3;
+  sint32 x = 4;
+  sint32 y = 5;
+  sint32 z = 6;
+}
+
+message LagCell {
+  sint32 chunk_x = 1;
+  sint32 chunk_z = 2;
+  uint32 score = 3;
+  string label = 4;
+}
+
+message LagMap {
+  repeated LagCell cells = 1;
+  string dimension = 2;
+  uint32 ttl_ms = 3;
+}
+
+message FreezeScreen {
+  bool on = 1;
+  string title = 2;
+  string body = 3;
+}
+
+message ScreenshotRequest {
+  uint32 request_id = 1;
+  string reason = 2;
+  uint32 max_width = 3;
+}
+
+message ScreenshotResult {
+  uint32 request_id = 1;
+  bool granted = 2;
+  bytes png = 3;
+  uint32 width = 4;
+  uint32 height = 5;
+}
+
+message ModListRequest {
+  uint32 request_id = 1;
+  string reason = 2;
+}
+
+message ModEntry {
+  string id = 1;
+  string name = 2;
+  string version = 3;
+}
+
+message ModList {
+  uint32 request_id = 1;
+  bool granted = 2;
+  repeated ModEntry mods = 3;
+  repeated string teho_modules = 4;
+}
+
+message PrivateStatus {
+  repeated string capabilities = 1;
+  string error = 2;
+  string server = 3;
+}
+
+message NpcSlot {
+  string slot = 1;
+  string id = 2;
+}
+
+message NpcLook {
+  string npc = 1;
+  uint32 mode = 2;
+  repeated NpcSlot slots = 3;
+}
+
+message NpcEmote {
+  string npc = 1;
+  uint32 action = 2;
+  string emote = 3;
+  bool loop = 4;
+}
+
+message NpcClear {
+  repeated string npcs = 1;
+}
+
+message CombatRules {
+  bool legacy_swing = 1;
+  bool legacy_blockhit = 2;
+  bool no_hit_delay_visual = 3;
+  bool miss_penalty_visual = 4;
+  bool legacy_hit_color = 5;
+}
+
+message ThirdPartyPolicy {
+  repeated string deny = 1;
+  string reason = 2;
+  bool report = 3;
+}
+
+message PolicyReport {
+  bool granted = 1;
+  repeated ModEntry violations = 2;
+}
+
+message SidebarRow {
+  string id = 1;
+  string text = 2;
+  string value = 3;
+  string item = 4;
+  fixed32 color = 5;
+  uint32 progress = 6;
+  bytes asset = 7;
+  sint32 order = 8;
+}
+
+message SidebarSet {
+  string title = 1;
+  repeated SidebarRow rows = 2;
+  repeated string remove = 3;
+  bool replace = 4;
+  fixed32 accent = 5;
+  string footer = 6;
+}
+
+message SidebarClear {}
+
+message Bar {
+  string id = 1;
+  string text = 2;
+  uint32 progress = 3;
+  fixed32 color = 4;
+  uint32 style = 5;
+  uint32 ttl_ms = 6;
+  string item = 7;
+}
+
+message BarRemove {
+  repeated string ids = 1;
+}
+
+message KillFeed {
+  string killer = 1;
+  string victim = 2;
+  string weapon = 3;
+  string text = 4;
+  fixed32 color = 5;
+  string killer_id = 6;
+  string victim_id = 7;
+  uint32 ttl_ms = 8;
+}
+
+message ScreenTint {
+  fixed32 color = 1;
+  bool vignette = 2;
+  uint32 fade_ms = 3;
+  uint32 ttl_ms = 4;
+  uint32 strength = 5;
+}
+
+message Title {
+  string title = 1;
+  string subtitle = 2;
+  uint32 animation = 3;
+  uint32 fade_in_ms = 4;
+  uint32 stay_ms = 5;
+  uint32 fade_out_ms = 6;
+  fixed32 color = 7;
+  uint32 scale = 8;
+}
+
+message TntFuse {
+  uint32 fuse_ticks = 1;
+}
+
+message Beam {
+  string id = 1;
+  sint32 x = 2;
+  sint32 y = 3;
+  sint32 z = 4;
+  string entity = 5;
+  fixed32 color = 6;
+  uint32 height = 7;
+  uint32 width = 8;
+  bool pulse = 9;
+  string dimension = 10;
+  uint32 ttl_ms = 11;
+}
+
+message Hologram {
+  string id = 1;
+  sint32 x = 2;
+  sint32 y = 3;
+  sint32 z = 4;
+  string entity = 5;
+  repeated string lines = 6;
+  string item = 7;
+  bytes asset = 8;
+  uint32 scale = 9;
+  fixed32 background = 10;
+  bool clickable = 11;
+  bool through_walls = 12;
+  string dimension = 13;
+  uint32 ttl_ms = 14;
+  uint32 range = 15;
+}
+
+message Shape {
+  string id = 1;
+  uint32 kind = 2;
+  repeated sint32 points = 3 [packed = false];
+  uint32 radius = 4;
+  uint32 height = 5;
+  fixed32 color = 6;
+  fixed32 fill = 7;
+  uint32 width = 8;
+  bool through_walls = 9;
+  string label = 10;
+  string dimension = 11;
+  uint32 ttl_ms = 12;
+}
+
+message WorldRemove {
+  uint32 kind = 1;
+  repeated string ids = 2;
+}
+
+message EntityStyle {
+  string entity = 1;
+  fixed32 glow = 2;
+  string name = 3;
+  uint32 scale = 4;
+  bool rainbow = 5;
+  repeated string hide = 6;
+  uint32 ttl_ms = 7;
+  bool hide_name = 8;
+}
+
+message EntityStyleClear {
+  repeated string entities = 1;
+}
+
+message BorderStyle {
+  fixed32 color = 1;
+  bool hide_wall = 2;
+  bool reset = 3;
+}
+
+message FireColor {
+  string entity = 1;
+  fixed32 color = 2;
+  bool reset = 3;
+}
+
+message Nametag {
+  string player = 1;
+  repeated string above = 2;
+  repeated string below = 3;
+  string prefix = 4;
+  string suffix = 5;
+  bytes badge = 6;
+  bool hide = 7;
+  string badge_item = 8;
+}
+
+message NametagClear {
+  repeated string players = 1;
+}
+
+message TabEntry {
+  string player = 1;
+  string display = 2;
+  string group = 3;
+  bytes icon = 4;
+  string ping = 5;
+  sint32 order = 6;
+  fixed32 color = 7;
+}
+
+message TabList {
+  repeated string header = 1;
+  repeated string footer = 2;
+  repeated TabEntry entries = 3;
+  bool hide_ping = 4;
+  bool replace = 5;
+  repeated string remove = 6;
+  bool reset = 7;
+}
+
+message Team {
+  string id = 1;
+  string name = 2;
+  fixed32 color = 3;
+  repeated string members = 4;
+  bool markers = 5;
+  bool through_walls = 6;
+  bool health = 7;
+  bool compass = 8;
+}
+
+message TeamRemove {
+  repeated string ids = 1;
+}
+
+message NickHint {
+  string nick = 1;
+  string player = 2;
+}
+
+message Keybind {
+  string id = 1;
+  string label = 2;
+  sint32 key = 3;
+  string button = 4;
+  bool hold = 5;
+  string description = 6;
+}
+
+message Keybinds {
+  repeated Keybind binds = 1;
+  string category = 2;
+}
+
+message KeyPress {
+  string id = 1;
+  bool pressed = 2;
+  uint32 held_ms = 3;
+}
+
+message CameraShake {
+  uint32 intensity = 1;
+  uint32 duration_ms = 2;
+  uint32 frequency = 3;
+}
+
+message FovPunch {
+  sint32 amount = 1;
+  uint32 duration_ms = 2;
+}
+
+message LookAt {
+  sint32 x = 1;
+  sint32 y = 2;
+  sint32 z = 3;
+  string entity = 4;
+  uint32 duration_ms = 5;
+  uint32 hold_ms = 6;
+}
+
+message Letterbox {
+  bool on = 1;
+  uint32 size = 2;
+  uint32 fade_ms = 3;
+}
+
+message Keyframe {
+  sint32 x = 1;
+  sint32 y = 2;
+  sint32 z = 3;
+  sint32 yaw = 4;
+  sint32 pitch = 5;
+  sint32 roll = 6;
+  uint32 fov = 7;
+  uint32 at_ms = 8;
+  uint32 ease = 9;
+}
+
+message Cutscene {
+  string id = 1;
+  repeated Keyframe frames = 2;
+  bool skippable = 3;
+  bool hide_hud = 4;
+  bool letterbox = 5;
+  bool loop = 6;
+  string dimension = 7;
+}
+
+message CutsceneStop {
+  string id = 1;
+}
+
+message ScreenFade {
+  fixed32 color = 1;
+  uint32 in_ms = 2;
+  uint32 hold_ms = 3;
+  uint32 out_ms = 4;
+}
+
+message CutsceneEnded {
+  string id = 1;
+  bool skipped = 2;
+}
+
+message PlaySound {
+  string id = 1;
+  bytes asset = 2;
+  string sound = 3;
+  sint32 x = 4;
+  sint32 y = 5;
+  sint32 z = 6;
+  string entity = 7;
+  bool positional = 8;
+  uint32 volume = 9;
+  uint32 pitch = 10;
+  bool loop = 11;
+  uint32 fade_in_ms = 12;
+  bool music = 13;
+}
+
+message StopSound {
+  repeated string ids = 1;
+  uint32 fade_out_ms = 2;
+}
+
+message Presence {
+  string game = 1;
+  string map = 2;
+  string state = 3;
+  uint64 started = 4;
+  uint32 party_size = 5;
+  uint32 party_max = 6;
+  bool joinable = 7;
+  bool clear = 8;
+}
+
+message InviteSheet {
+  string reason = 1;
+  string party = 2;
+  string address = 3;
+}
+
+message Transfer {
+  string host = 1;
+  uint32 port = 2;
+  string token = 3;
+  string title = 4;
+  string reason = 5;
+}
+
+message ServerLink {
+  string label = 1;
+  string url = 2;
+  string kind = 3;
+}
+
+message ServerLinks {
+  repeated ServerLink links = 1;
+}
+
+message UiNode {
+  string id = 1;
+  string parent = 2;
+  uint32 kind = 3;
+  string text = 4;
+  string value = 5;
+  sint32 min = 6;
+  sint32 max = 7;
+  uint32 step = 8;
+  bytes asset = 9;
+  string item = 10;
+  string player = 11;
+  fixed32 color = 12;
+  uint32 columns = 13;
+  bool disabled = 14;
+  string placeholder = 15;
+  repeated string options = 16;
+  uint64 millis = 17;
+  uint32 style = 18;
+  uint32 width = 19;
+  uint32 height = 20;
+  string tooltip = 21;
+}
+
+message UiOpen {
+  string id = 1;
+  uint32 surface = 2;
+  string title = 3;
+  repeated UiNode nodes = 4;
+  uint32 width = 5;
+  bool closeable = 6;
+  uint32 anchor = 7;
+}
+
+message UiPatch {
+  string id = 1;
+  repeated UiNode nodes = 2;
+  repeated string remove = 3;
+  string title = 4;
+}
+
+message UiClose {
+  string id = 1;
+}
+
+message UiEvent {
+  string id = 1;
+  string node = 2;
+  uint32 action = 3;
+  string value = 4;
+}
+
+message InfoRequest {
+  uint32 request_id = 1;
+  repeated string fields = 2;
+  string reason = 3;
+}
+
+message InfoReply {
+  uint32 request_id = 1;
+  repeated string granted = 2;
+  string input = 3;
+  uint32 fps = 4;
+  uint32 frame_p50 = 5;
+  uint32 frame_p99 = 6;
+  uint32 render_distance = 7;
+  repeated ModEntry mods = 8;
+  repeated string teho_modules = 9;
+  string locale = 10;
+  uint32 gui_scale = 11;
+  uint32 width = 12;
+  uint32 height = 13;
+  string os = 14;
+  uint32 memory_mb = 15;
+}
+
+message AssertRequest {
+  uint32 request_id = 1;
+  string nonce = 2;
+}
+
+message AssertResult {
+  uint32 request_id = 1;
+  string token = 2;
+  string error = 3;
+}
+
+message AttestRequest {
+  uint32 request_id = 1;
+  string nonce = 2;
+}
+
+message AttestResult {
+  uint32 request_id = 1;
+  string token = 2;
+  string error = 3;
+}
+
+message PackHint {
+  string url = 1;
+  string sha1 = 2;
+  uint32 size = 3;
+  bool required = 4;
+  string prompt = 5;
+  string id = 6;
+}
+
+message PackStatus {
+  string sha1 = 1;
+  uint32 state = 2;
+  string error = 3;
+}
+
+message ClipMark {
+  string id = 1;
+  string title = 2;
+  uint32 before_ms = 3;
+  uint32 after_ms = 4;
+}
+
+message ClipResult {
+  string id = 1;
+  bool saved = 2;
+  string url = 3;
+  string error = 4;
+}
+
+message ObserverPlayer {
+  string player = 1;
+  string name = 2;
+  uint32 health = 3;
+  bool alive = 4;
+  uint32 kills = 5;
+  string item = 6;
+}
+
+message ObserverTeam {
+  string name = 1;
+  fixed32 color = 2;
+  sint32 score = 3;
+  repeated ObserverPlayer players = 4;
+}
+
+message ObserverHud {
+  bool on = 1;
+  string title = 2;
+  string subtitle = 3;
+  repeated ObserverTeam teams = 4;
+}
+
+message CameraFollow {
+  string player = 1;
+  uint32 mode = 2;
+  uint32 distance = 3;
+  bool smooth = 4;
+}
+
+message Statue {
+  string id = 1;
+  string player = 2;
+  string name = 3;
+  sint32 x = 4;
+  sint32 y = 5;
+  sint32 z = 6;
+  sint32 yaw = 7;
+  uint32 pose = 8;
+  uint32 scale = 9;
+  string dimension = 10;
+  string label = 11;
+  string emote = 12;
+}
+
+message StatueRemove {
+  repeated string ids = 1;
+}
+
+message Branding {
+  fixed32 accent = 1;
+  bytes logo = 2;
+  bytes banner = 3;
+  bytes background = 4;
+  string tagline = 5;
+  bool reset = 6;
+}
+
+message ShowcaseOpen {
+  string title = 1;
+  repeated string items = 2;
+  string emote = 3;
+  string focus = 4;
+  string subtitle = 5;
+}

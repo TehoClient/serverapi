@@ -1,0 +1,22 @@
+# Build products and local caches
+**/.gradle/
+**/build/
+**/target/
+**/node_modules/
+**/__pycache__/
+**/*.egg-info/
+**/.venv/
+**/venv/
+*.pyc
+*.log
+*.tgz
+*.crate
+*.whl
+*.tar.gz
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

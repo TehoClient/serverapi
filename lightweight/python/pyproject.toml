@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "teho-api"
+version = "1.0.0"
+description = "Teho Server API protocol for Python servers and proxies"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+
+[tool.setuptools]
+packages = ["teho_api"]
+license-files = ["LICENSE"]
