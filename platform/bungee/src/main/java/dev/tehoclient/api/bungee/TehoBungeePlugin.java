@@ -119,6 +119,7 @@ public final class TehoBungeePlugin extends Plugin implements Listener, TehoList
 		proxy.configure(key, next.serverName());
 		presets = next;
 		featureSettings = dev.tehoclient.api.common.FeatureSettings.load(core, tree, getLogger()::warning);
+		dev.tehoclient.api.common.ListingPublisher.publish(core, tree, getDataFolder().toPath(), getLogger()::warning);
 	}
 
 	private void reload() {

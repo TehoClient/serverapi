@@ -7,6 +7,16 @@
   "private": {
     "grant": ""
   },
+  "listing": {
+    "enabled": false,
+    "name": "",
+    "address": "",
+    "description": "",
+    "versions": "",
+    "categories": [],
+    "icon": "listing-icon.png",
+    "banner": "listing-banner.png"
+  },
   "permissions": {
     "operator-level": 2,
     "players": {}

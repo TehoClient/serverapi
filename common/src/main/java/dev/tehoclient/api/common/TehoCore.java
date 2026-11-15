@@ -82,6 +82,7 @@ public final class TehoCore implements TehoApi {
 	private final NetworkDirectors.Statues statues = new NetworkDirectors.Statues(() -> new ArrayList<TehoSession>(sessions.values()));
 	private final NetworkDirectors.Brand brand = new NetworkDirectors.Brand(() -> new ArrayList<TehoSession>(sessions.values()));
 	private final NetworkDirectors.Rewards rewards = new NetworkDirectors.Rewards(backend);
+	private final Listings listings = new Listings(backend, () -> new ArrayList<String>(features()));
 	private volatile String verified = "";
 
 	public TehoCore(PlatformBridge bridge) {
@@ -143,6 +144,11 @@ public final class TehoCore implements TehoApi {
 	@Override
 	public dev.tehoclient.api.rewards.RewardsApi rewards() {
 		return rewards;
+	}
+
+	@Override
+	public dev.tehoclient.api.listing.ListingApi listing() {
+		return listings;
 	}
 
 	public Backend backend() {

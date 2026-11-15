@@ -62,6 +62,8 @@ public interface TehoApi {
 
 	dev.tehoclient.api.rewards.RewardsApi rewards();
 
+	dev.tehoclient.api.listing.ListingApi listing();
+
 	void addListener(TehoListener listener);
 
 	void removeListener(TehoListener listener);

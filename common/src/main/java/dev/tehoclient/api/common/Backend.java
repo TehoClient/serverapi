@@ -28,12 +28,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.NoRouteToHostException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -41,6 +50,13 @@ import java.util.concurrent.ThreadFactory;
 public final class Backend {
 	public static final String DEFAULT_URL = "https://auth.tehoclientprod.com";
 	private static final int MAX_RESPONSE = 1024 * 1024;
+	private static final String PRIMARY_DOMAIN = "tehoclientprod.com";
+	private static final String FALLBACK_DOMAIN = "tehoclientfallback.com";
+	private static final Set<String> FALLBACK_SUBDOMAINS = new HashSet<>(Arrays.asList(
+			"auth", "friends", "join", "launch", "skins", "worlds",
+			"analytics", "meta", "mods", "pics", "proxy", "tiers"));
+	private static final long REMEMBER_DOWN_MS = 5 * 60 * 1000L;
+	private final Map<String, Long> down = new ConcurrentHashMap<>();
 
 	public static final class Response {
 		public final int status;
@@ -109,7 +125,7 @@ public final class Backend {
 			@Override
 			public void run() {
 				try {
-					future.complete(exchange(method, path, body));
+					future.complete(exchangeWithFallback(method, path, body));
 				} catch (IOException | RuntimeException failed) {
 					future.completeExceptionally(failed);
 				}
@@ -118,8 +134,80 @@ public final class Backend {
 		return future;
 	}
 
-	private Response exchange(String method, String path, Map<String, Object> body) throws IOException {
-		HttpURLConnection connection = (HttpURLConnection) new URL(url + path).openConnection();
+	static String fallbackBase(String base) {
+		String prefix = "https://";
+		if (base == null || !base.toLowerCase(Locale.ROOT).startsWith(prefix)) {
+			return null;
+		}
+		String rest = base.substring(prefix.length());
+		int slash = rest.indexOf('/');
+		String authority = slash < 0 ? rest : rest.substring(0, slash);
+		String tail = slash < 0 ? "" : rest.substring(slash);
+		int colon = authority.indexOf(':');
+		String host = (colon < 0 ? authority : authority.substring(0, colon)).toLowerCase(Locale.ROOT);
+		String port = colon < 0 ? "" : authority.substring(colon);
+		String suffix = "." + PRIMARY_DOMAIN;
+		if (!host.endsWith(suffix)) {
+			return null;
+		}
+		String sub = host.substring(0, host.length() - suffix.length());
+		if (!FALLBACK_SUBDOMAINS.contains(sub)) {
+			return null;
+		}
+		return prefix + sub + "." + FALLBACK_DOMAIN + port + tail;
+	}
+
+	static boolean networkFailure(Throwable error) {
+		for (Throwable current = error; current != null; current = current.getCause()) {
+			if (current instanceof UnknownHostException || current instanceof ConnectException
+					|| current instanceof NoRouteToHostException) {
+				return true;
+			}
+			if (current instanceof SocketTimeoutException) {
+				String message = current.getMessage();
+				if (message != null && message.toLowerCase(Locale.ROOT).contains("connect")) {
+					return true;
+				}
+			}
+			if (current.getCause() == current) {
+				break;
+			}
+		}
+		return false;
+	}
+
+	private Response exchangeWithFallback(String method, String path, Map<String, Object> body) throws IOException {
+		String primary = url;
+		String fallback = fallbackBase(primary);
+		if (fallback == null) {
+			return exchange(primary, method, path, body);
+		}
+		Long until = down.get(primary);
+		boolean primaryDown = until != null && until > System.currentTimeMillis();
+		if (!primaryDown && until != null) {
+			down.remove(primary, until);
+		}
+		String first = primaryDown ? fallback : primary;
+		String second = primaryDown ? primary : fallback;
+		try {
+			return exchange(first, method, path, body);
+		} catch (IOException failed) {
+			if (!networkFailure(failed)) {
+				throw failed;
+			}
+			if (!primaryDown) {
+				down.put(primary, System.currentTimeMillis() + REMEMBER_DOWN_MS);
+			}
+			Response response = exchange(second, method, path, body);
+			if (primaryDown) {
+				down.remove(primary);
+			}
+			return response;
+		}
+	}
+
+	private Response exchange(String base, String method, String path, Map<String, Object> body) throws IOException {
+		HttpURLConnection connection = (HttpURLConnection) new URL(base + path).openConnection();
 		connection.setInstanceFollowRedirects(false);
 		connection.setConnectTimeout(8000);
 		connection.setReadTimeout(12000);

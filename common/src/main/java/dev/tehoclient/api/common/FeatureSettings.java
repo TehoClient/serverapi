@@ -29,6 +29,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import dev.tehoclient.api.TehoPlayer;
@@ -44,6 +48,14 @@ public final class FeatureSettings {
 			{"integrity", TehoProtocol.ATTEST}, {"pack", TehoProtocol.PACK}, {"clips", TehoProtocol.CLIPS},
 			{"broadcast", TehoProtocol.BROADCAST}, {"statues", TehoProtocol.STATUE},
 			{"branding", TehoProtocol.BRANDING}, {"showcase", TehoProtocol.SHOWCASE}, {"assets", TehoProtocol.ASSET}};
+
+	private static final long CERTIFICATE_REFRESH_HOURS = 12;
+	private static final ScheduledExecutorService CERTIFICATES = Executors.newSingleThreadScheduledExecutor(task -> {
+		Thread thread = new Thread(task, "teho-certificate");
+		thread.setDaemon(true);
+		return thread;
+	});
+	private static ScheduledFuture<?> certificateRefresh;
 
 	private String presenceGame = "";
 	private String presenceState = "";
@@ -64,6 +76,24 @@ public final class FeatureSettings {
 		return out;
 	}
 
+	private static synchronized void refreshCertificate(TehoCore core, boolean fetch) {
+		if (certificateRefresh != null) {
+			certificateRefresh.cancel(false);
+			certificateRefresh = null;
+		}
+		if (!fetch) {
+			return;
+		}
+		certificateRefresh = CERTIFICATES.scheduleAtFixedRate(() -> core.backend().get("/v1/servers/certificate").thenAccept(response -> {
+			String fetched = Json.string(response.body, "certificate");
+			if (response.ok() && !fetched.isEmpty()) {
+				core.verified(fetched);
+			} else if (response.status == 403) {
+				core.verified("");
+			}
+		}), 0, CERTIFICATE_REFRESH_HOURS, TimeUnit.HOURS);
+	}
+
 	public static FeatureSettings load(TehoCore core, Map<?, ?> root, Consumer<String> warn) {
 		Map<?, ?> config = root == null ? Collections.emptyMap() : root;
 		FeatureSettings settings = new FeatureSettings();
@@ -75,14 +105,7 @@ public final class FeatureSettings {
 		}
 		String certificate = string(section(config, "verified").get("certificate"), "");
 		core.verified(certificate);
-		if (certificate.isEmpty() && core.backend().hasKey()) {
-			core.backend().get("/v1/servers/certificate").thenAccept(response -> {
-				String fetched = Json.string(response.body, "certificate");
-				if (response.ok() && !fetched.isEmpty()) {
-					core.verified(fetched);
-				}
-			});
-		}
+		refreshCertificate(core, certificate.isEmpty() && core.backend().hasKey());
 		Map<?, ?> presence = section(config, "presence");
 		settings.presenceGame = string(presence.get("game"), "");
 		settings.presenceState = string(presence.get("state"), "");

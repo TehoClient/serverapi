@@ -128,6 +128,7 @@ public final class TehoVelocityPlugin implements TehoListener {
 		proxy.configure(key, next.serverName());
 		presets = next;
 		featureSettings = dev.tehoclient.api.common.FeatureSettings.load(core, tree, logger::warn);
+		dev.tehoclient.api.common.ListingPublisher.publish(core, tree, dataDirectory, logger::warn);
 	}
 
 	private void reload() {

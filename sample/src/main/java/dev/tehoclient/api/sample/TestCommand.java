@@ -234,8 +234,8 @@ final class TestCommand implements CommandExecutor {
 	private void social(TehoPlayer teho, Player player) {
 		teho.social().presence(Presence.builder("Teho Test").map("Lighthouse").state("Testing the Server API").party(1, 4).startedNow().build());
 		Map<String, String> links = new LinkedHashMap<>();
-		links.put("Discord", "https://discord.gg/teho");
-		links.put("Store", "https://tho.pics");
+		links.put("Discord", "https://discord.gg/tehoclient");
+		links.put("Store", "https://teho.pics");
 		teho.social().links(links);
 		say(player, "social", true, "rich presence in Discord and friends, 2 links in your pause menu");
 	}

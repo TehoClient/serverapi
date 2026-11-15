@@ -159,6 +159,7 @@ public final class ServerHost {
 		presets = next;
 		readPermissions(tree);
 		FeatureSettings loaded = FeatureSettings.load(core, tree, message -> bridge.warn(message, null));
+		ListingPublisher.publish(core, tree, configFile.getParent(), message -> bridge.warn(message, null));
 		settings = loaded;
 	}
 

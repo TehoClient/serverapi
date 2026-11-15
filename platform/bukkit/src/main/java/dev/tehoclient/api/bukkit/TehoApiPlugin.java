@@ -121,6 +121,7 @@ public final class TehoApiPlugin extends JavaPlugin implements Listener, PluginM
 		features.addAll(dev.tehoclient.api.common.FeatureSettings.features(tree));
 		core.configure(getConfig().getString("server-name", ""), features, getConfig().getBoolean("debug", false));
 		featureSettings = dev.tehoclient.api.common.FeatureSettings.load(core, tree, getLogger()::warning);
+		dev.tehoclient.api.common.ListingPublisher.publish(core, tree, getDataFolder().toPath(), getLogger()::warning);
 		presets.load(getConfig(), getLogger());
 		staffKit.load(getConfig(), getLogger());
 		core.grant(getConfig().getString("private.grant", ""));
